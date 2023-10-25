@@ -1,5 +1,47 @@
 <?php
-    TODO:
+    $error = "";
+
+    $succesMessage = "";
+
+    if ($_POST) {
+       if (!$_POST["email"]) {
+         $error .= "An email address is required<br>";
+       }
+
+       if (!$_POST["content"]) {
+         $error .= "The content field is required.<br>";
+       }
+
+       if (!$_POST["subject"]) {
+         $error .= "The subject is required.<br>";
+       }
+
+       if($_POST["email"] && filter_var($_POST["email"], FILTER_VALIDATE_EMAIL) === false) {
+        $error .= "The email address is invalid.<br>";
+       }
+
+       //check if there are errors
+       if($error != "") {
+        $error = '<div class="alert alert-danger" role="alert"><p>There were error(s) in your form:</p>' . $error . '</div>';
+    }
+    else {  //email address is good!
+        $emailTo = "codestarsjpbaugh@gmail.com";
+        $subject = $_POST["subject"];
+        $content = $_POST["content"];
+        $headers = "From: " . $_POST["email"];
+
+        //try sending the mail
+        if(mail($emailTo, $subject, $content, $headers)) {
+            $successMessage = '<div class="alert alert-success" role="alert">Your message was sent, ' . 
+                            'we\'ll get back to you ASAP!</div>';
+        }
+        else {
+            $error = '<div class="alert alert-danger" role="alert">Your message couldn\'t be sent - try again later</div>';
+        }//end if mail function succeeded or failed
+    }//end else for the if $error != ""
+
+}//end if $_POST
+
 ?>
 
 <!DOCTYPE html>
@@ -67,8 +109,10 @@
             if(error != "") {
                 $("#error").html('<div class="alert alert-danger" role="alert"><p>' +
                '<strong>There were error(s) in your form:</strong></p>' + error + '</div>');
-            } else {
-                return false;
+
+               return false
+            } else {  //no errors!
+                return true;
             }
         })
     </script>
